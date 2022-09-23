@@ -8,12 +8,13 @@ class ObjectTracking(object):
         self.boundingbox = None
         self.vs = VideoStream(src=0).start()
         self.fps = FPS()
+        self.video = self.get_video()
 
     def run(self):
         tracker = self.get_tracker()
 
         while True:
-            frame = self.vs.read()
+            frame = self.video.read() if self.src is "0" else self.video.read()[1]
 
             if frame is None:
                 break
@@ -38,7 +39,7 @@ class ObjectTracking(object):
             elif key == ord("q"):
                 break
 
-        self.vs.stop()
+        self.video.stop()
         cv2.destroyAllWindows()
 
     def draw_boundingbox(self, frame, tracker, boundingbox, frame_size:tuple):
@@ -75,6 +76,14 @@ class ObjectTracking(object):
         }
 
         return object_trackers[self.tracker_algorithm]
+
+    def get_video(self):
+        """
+        """
+        if self.src is "0":
+            return VideoStream(src=0).start()
+        else:
+            return cv2.VideoCapture(self.src)
 
 if __name__ == "__main__":
     tracker = ObjectTracking(tracker_algorithm="mosse")
