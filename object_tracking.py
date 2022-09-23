@@ -30,6 +30,10 @@ class ObjectTracking(object):
 
                 tracker.init(frame, self.boundingbox)
                 self.fps.start()
+
+            if key == ord("e"):
+                self.boundingbox = None
+                tracker = self.get_tracker()
             
             elif key == ord("q"):
                 break
@@ -67,7 +71,7 @@ class ObjectTracking(object):
             "mil": cv2.legacy.TrackerMIL.create(),
             "tld": cv2.legacy.TrackerTLD.create(),
             "medianflow": cv2.legacy.TrackerMedianFlow.create(),
-            "mosse": cv2.legacy.TrackerMOSSE_create()
+            "mosse": cv2.legacy.TrackerMOSSE.create()
         }
 
         return object_trackers[self.tracker_algorithm]
