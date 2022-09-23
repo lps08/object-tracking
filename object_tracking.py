@@ -5,7 +5,7 @@ import cv2
 class ObjectTracking(object):
     def __init__(self, tracker_algorithm:str="csrt") -> None:
         self.tracker_algorithm = tracker_algorithm
-        self.boundbox = None
+        self.boundingbox = None
         self.vs = VideoStream(src=0).start()
         self.fps = FPS()
 
@@ -20,18 +20,16 @@ class ObjectTracking(object):
 
             frame = imutils.resize(frame, width=500)
 
-            self.draw_boundbox(frame=frame, tracker=tracker, boundbox=self.boundbox, frame_size=frame.shape[:2])
+            self.draw_boundingbox(frame=frame, tracker=tracker, boundingbox=self.boundingbox, frame_size=frame.shape[:2])
 
             cv2.imshow("frame", frame)
             key = cv2.waitKey(1) & 0xFF
 
             if key == ord("s"):
-                self.boundbox = cv2.selectROI("Frame", frame, fromCenter=False, showCrosshair=True)
+                self.boundingbox = cv2.selectROI("Frame", frame, fromCenter=False, showCrosshair=True)
 
-                tracker.init(frame, self.boundbox)
+                tracker.init(frame, self.boundingbox)
                 self.fps.start()
-
-                print("foi")
             
             elif key == ord("q"):
                 break
@@ -39,8 +37,8 @@ class ObjectTracking(object):
         self.vs.stop()
         cv2.destroyAllWindows()
 
-    def draw_boundbox(self, frame, tracker, boundbox, frame_size:tuple):
-        if boundbox is not None:
+    def draw_boundingbox(self, frame, tracker, boundingbox, frame_size:tuple):
+        if boundingbox is not None:
             (success, box) = tracker.update(frame)
 
             if success:
