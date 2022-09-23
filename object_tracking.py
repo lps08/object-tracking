@@ -3,14 +3,36 @@ from imutils.video import VideoStream, FPS
 import cv2
 
 class ObjectTracking(object):
-    def __init__(self, tracker_algorithm:str="csrt") -> None:
+    """Object tracking is one such application of computer vision 
+    where an object is detected in a video, otherwise interpreted 
+    as a set of frames, and the object’s trajectory is estimated.
+    
+    Parameters
+    ----------
+    - src: video source. If you want to use the web cam, set as '0',  
+    otherwise set the video path. Defaut = 0.
+
+    - tracker_algorithm: the tracker algorithm can be:
+        - csrt
+        - kcf
+        - boosting
+        - mil
+        - tld
+        - medianflow
+        - mosse
+    """
+
+    def __init__(self, src:str="0", tracker_algorithm:str="csrt") -> None:
+        self.src = src
         self.tracker_algorithm = tracker_algorithm
         self.boundingbox = None
-        self.vs = VideoStream(src=0).start()
         self.fps = FPS()
         self.video = self.get_video()
 
     def run(self):
+        """This function runs the main loop to reprocuces the video with 
+        tracker algorithm.
+        """
         tracker = self.get_tracker()
 
         while True:
@@ -43,6 +65,17 @@ class ObjectTracking(object):
         cv2.destroyAllWindows()
 
     def draw_boundingbox(self, frame, tracker, boundingbox, frame_size:tuple):
+        """This function draws and update the bounding box from the tracker 
+        algorithm.
+
+        Parameters
+        ----------
+        - frame: the current frame that will be used to draw and update the 
+        new bounding box.
+        - tracker: tracker object.
+        - boundingbox: bounding box selected to be tracked.
+        - frame_size: video frame size.
+        """
         if boundingbox is not None:
             (success, box) = tracker.update(frame)
 
@@ -65,6 +98,12 @@ class ObjectTracking(object):
                     cv2.FONT_HERSHEY_SIMPLEX, 0.6, (0, 0, 255), 2)
 
     def get_tracker(self):
+        """Get the tracker object selected.
+
+        Returns
+        -------
+        - tracker algorithm selected
+        """
         object_trackers = {
             "csrt": cv2.legacy.TrackerCSRT.create(),
             "kcf": cv2.legacy.TrackerKCF.create(),
@@ -78,7 +117,11 @@ class ObjectTracking(object):
         return object_trackers[self.tracker_algorithm]
 
     def get_video(self):
-        """
+        """Select the video type.
+
+        Returns:
+        - VideoStream: if the selected source video was "0".
+        - VideoCapture from vídeo: if the selected source video was a video path.
         """
         if self.src is "0":
             return VideoStream(src=0).start()
@@ -86,5 +129,5 @@ class ObjectTracking(object):
             return cv2.VideoCapture(self.src)
 
 if __name__ == "__main__":
-    tracker = ObjectTracking(tracker_algorithm="mosse")
+    tracker = ObjectTracking(tracker_algorithm="csrt")
     tracker.run()
